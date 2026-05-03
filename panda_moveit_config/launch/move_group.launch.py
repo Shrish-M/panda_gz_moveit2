@@ -7,7 +7,7 @@ from typing import List
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, TimerAction
 from launch.conditions import IfCondition
 from launch.substitutions import (
     Command,
@@ -317,18 +317,21 @@ def generate_launch_description():
         ),
     ]
 
-    # Add nodes for loading controllers
+    # Add nodes for loading controllers — wrapped in TimerAction to give
+    # IgnitionSystem time to export hardware interfaces before spawners run
     for controller in moveit_controller_manager_yaml["controller_names"] + [
         "joint_state_broadcaster"
     ]:
         nodes.append(
-            # controller_manager_spawner
-            Node(
-                package="controller_manager",
-                executable="spawner",
-                output="log",
-                arguments=[controller, "--switch-timeout", "30.0", "--ros-args", "--log-level", log_level],
-                parameters=[{"use_sim_time": use_sim_time}],
+            TimerAction(
+                period=15.0,
+                actions=[Node(
+                    package="controller_manager",
+                    executable="spawner",
+                    output="log",
+                    arguments=[controller, "--switch-timeout", "30.0", "--ros-args", "--log-level", log_level],
+                    parameters=[{"use_sim_time": use_sim_time}],
+                )],
             ),
         )
 

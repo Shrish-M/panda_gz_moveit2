@@ -123,7 +123,7 @@ planner_configs:
   TrajOptDefault:
     type: geometric::TrajOpt
 
-arm:
+panda_arm:
   enforce_constrained_state_space: true
   projection_evaluator: joints(panda_joint1,panda_joint2)
   simplify_solutions: true
