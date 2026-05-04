@@ -29,7 +29,7 @@
   <xacro:property name="joint_finger1_damping" value="3.0"/>
   <xacro:property name="joint_finger1_friction" value="0.4"/>
   <xacro:property name="link_finger1_name" value="leftfinger"/>
-  <xacro:property name="link_finger1_mu" value="1.13"/>
+  <xacro:property name="link_finger1_mu" value="10.0"/>
   <xacro:property name="link_finger1_mesh_offset" value="0 0 0"/>
 
   <xacro:property name="joint_finger2_name" value="finger_joint2"/>
@@ -44,7 +44,7 @@
   <xacro:property name="joint_finger2_damping" value="3.0"/>
   <xacro:property name="joint_finger2_friction" value="0.4"/>
   <xacro:property name="link_finger2_name" value="rightfinger"/>
-  <xacro:property name="link_finger2_mu" value="1.13"/>
+  <xacro:property name="link_finger2_mu" value="10.0"/>
   <xacro:property name="link_finger2_mesh_offset" value="0 0 ${pi}"/>
 
   <xacro:property name="ee_name" value="hand_tcp"/>
@@ -134,6 +134,16 @@
     mu="${link_finger2_mu}"
     mesh_offset_rpy="${link_finger2_mesh_offset}"
     />
+
+    <!-- Stiff, high-friction contact on fingers so grasped objects don't slip -->
+    <gazebo reference="${prefix}${link_finger1_name}">
+      <kp>1e8</kp>
+      <kd>1</kd>
+    </gazebo>
+    <gazebo reference="${prefix}${link_finger2_name}">
+      <kp>1e8</kp>
+      <kd>1</kd>
+    </gazebo>
 
     <!-- End effector -->
     <xacro:panda_virtual_link
